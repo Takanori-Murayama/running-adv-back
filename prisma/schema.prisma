@@ -1,0 +1,60 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserCategory {
+  RUNNER
+  CYCLIST
+  WALKER
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+model User {
+  id            String   @id @default(uuid())
+  provider      String
+  providerId    String?
+  email         String?  @unique
+  displayName   String?
+  photoUrl      String?
+  passwordHash  String?
+  category      UserCategory @default(RUNNER)
+  role          UserRole @default(USER)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  runner      Runner?
+  @@index([provider, providerId], name: "idx_user_provider_pid")
+}
+
+model Runner {
+  id          String   @id @default(uuid())
+  userId      String   @unique           // ← 1対1を担保
+  displayName String
+  bio         String?  @db.Text
+  area        String?
+  paceSec     Int?
+  tags        String[] @default([])
+
+  avatarUrl   String?
+  isPublic    Boolean  @default(true)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // ← もう片側（Runner側）。これで両側が揃う
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@index([isPublic, area])
+}
