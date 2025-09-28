@@ -78,6 +78,6 @@ async function bootstrap() {
   app.use(passport.session());
   // app.set('trust proxy', 1); // 本番でプロキシ越えの場合
 
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
 }
 bootstrap();
