@@ -26,7 +26,7 @@ async function bootstrap() {
 
   // CORS（フロント分離の場合は適切に制限）
   app.enableCors({
-    origin: ['http://localhost:3000'], // フロントのURL
+    origin: [process.env.FRONTEND_ORIGIN, 'localhost:3000'], // フロントのURL
     credentials: true,
   });
 
